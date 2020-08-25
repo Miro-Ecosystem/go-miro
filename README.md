@@ -1,5 +1,9 @@
 # Miro API in Go
 
+![tests](https://github.com/Miro-Ecosystem/go-miro/workflows/tests/badge.svg)
+
+Go written [Miro](https://miro.com/app/dashboard/) API client.
+
 ## Installation
 
 Include this is your code as below:
