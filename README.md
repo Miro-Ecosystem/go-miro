@@ -10,13 +10,13 @@ Go written [Miro](https://miro.com/app/dashboard/) API client.
 Include this is your code as below:
 
 ```go
-import "github.com/KeisukeYamashita/go-miro/miro"
+import "github.com/Miro-Ecosystem/go-miro/miro"
 ```
 
 Using `go get`:
 
 ```console
-$ go get github.com/KeisukeYamashita/go-miro
+$ go get github.com/Miro-Ecosystem/go-miro
 ```
 
 ## Usage
