@@ -1,4 +1,4 @@
-module github.com/KeisukeYamashita/go-miro
+module github.com/Miro-Ecosystem/go-miro
 
 go 1.14
 
