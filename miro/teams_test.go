@@ -92,3 +92,33 @@ func TestTeamsService_GetCurrentUserConnection(t *testing.T) {
 		})
 	}
 }
+
+func TestTeamsService_Invite(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	tcs := map[string]struct {
+		id    string
+		email string
+		want  []*TeamUserConnection
+	}{
+		"ok": {"1", "miro@test.com", getTeamUserConnections("1")},
+	}
+
+	for n, tc := range tcs {
+		t.Run(n, func(t *testing.T) {
+			mux.HandleFunc(fmt.Sprintf("/%s/%s/%s/%s", teamsPath, tc.id, userConnectionsPath, teamInvitePath), func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, fmt.Sprintf(getTeamUserConnectionsJSON(tc.id)))
+			})
+
+			got, err := client.Teams.Invite(context.Background(), tc.id, tc.email)
+			if err != nil {
+				t.Fatalf("Failed: %v", err)
+			}
+
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("Diff: %s(-got +want)", diff)
+			}
+		})
+	}
+}

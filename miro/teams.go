@@ -12,6 +12,7 @@ import (
 const (
 	teamsPath           = "teams"
 	userConnectionsPath = "user-connections"
+	teamInvitePath      = "invite"
 )
 
 // TeamsService handles communication to Miro Teams API.
@@ -76,7 +77,7 @@ func (s *TeamsService) GetTeam(ctx context.Context, id string) (*Team, error) {
 // GetUserConnections gets team user connections by Team ID.
 //
 // API doc: https://developers.miro.com/reference#get-team-user-connections
-func (s *TeamsService) GetUserConnections(ctx context.Context, id string) (*Team, error) {
+func (s *TeamsService) GetTeamUserConnections(ctx context.Context, id string) (*Team, error) {
 	req, err := s.client.NewGetRequest(fmt.Sprintf("%s/%s/%s", teamsPath, id, userConnectionsPath))
 	if err != nil {
 		return nil, err
@@ -123,6 +124,32 @@ func (s *TeamsService) GetCurrentUserConnection(ctx context.Context, id string) 
 	}
 
 	return conn, nil
+}
+
+// Invite invites passed user to specified team.
+//
+// API doc: https://developers.miro.com/reference#invite-to-team
+func (s *TeamsService) Invite(ctx context.Context, id string, email string) ([]*TeamUserConnection, error) {
+	req, err := s.client.NewPostRequest(fmt.Sprintf("%s/%s/%s/%s?email=%s", teamsPath, id, userConnectionsPath, teamInvitePath, email), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	conns := []*TeamUserConnection{}
+	if err := json.NewDecoder(resp.Body).Decode(&conns); err != nil {
+		return nil, err
+	}
+
+	return conns, nil
 }
 
 func (t *Team) UnmarshalJSON(j []byte) error {

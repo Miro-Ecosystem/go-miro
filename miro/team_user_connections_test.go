@@ -22,6 +22,31 @@ func getTeamUserConnectionJSON(id string) string {
 }`, id)
 }
 
+func getTeamUserConnectionsJSON(id string) string {
+	return fmt.Sprintf(`[
+	{
+		"type": "team-user-connection",
+		"user": {
+		  "type": "user",
+		  "name": "Sergey",
+		  "id": "user"
+		},
+		"role": "admin",
+		"id": "%s"
+	},
+	{
+		"type": "team-user-connection",
+		"user": {
+		  "type": "user",
+		  "name": "Sergey",
+		  "id": "user"
+		},
+		"role": "admin",
+		"id": "%s"
+	}
+]`, id, id)
+}
+
 func getTeamUserConnection(id string) *TeamUserConnection {
 	return &TeamUserConnection{
 		ID:   id,
@@ -31,6 +56,10 @@ func getTeamUserConnection(id string) *TeamUserConnection {
 			Name: "Sergey",
 		},
 	}
+}
+
+func getTeamUserConnections(id string) []*TeamUserConnection {
+	return []*TeamUserConnection{getTeamUserConnection(id), getTeamUserConnection(id)}
 }
 
 func TestTeamUserConnectionService_Get(t *testing.T) {
