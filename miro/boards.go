@@ -104,22 +104,27 @@ type CreateBoardRequest struct {
 // Create creates board by Board Request.
 //
 // API doc: https://developers.miro.com/reference#create-board
-func (s *BoardsService) Create(ctx context.Context, b *CreateBoardRequest) error {
+func (s *BoardsService) Create(ctx context.Context, b *CreateBoardRequest) (*Board, error) {
 	req, err := s.client.NewPostRequest(boardsPath, b)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	resp, err := s.client.Do(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
 	}
 
-	return nil
+	board := &Board{}
+	if err := json.NewDecoder(resp.Body).Decode(board); err != nil {
+		return nil, err
+	}
+
+	return board, nil
 }
 
 // UpdateBoardRequest represents update board request payload.
@@ -132,22 +137,27 @@ type UpdateBoardRequest struct {
 	SharingPolicy *SharingPolicy `json:"sharingPolicy"`
 }
 
-func (s *BoardsService) Update(ctx context.Context, b *UpdateBoardRequest) error {
+func (s *BoardsService) Update(ctx context.Context, b *UpdateBoardRequest) (*Board, error) {
 	req, err := s.client.NewPatchRequest(boardsPath, b)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	resp, err := s.client.Do(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
 	}
 
-	return nil
+	board := &Board{}
+	if err := json.NewDecoder(resp.Body).Decode(board); err != nil {
+		return nil, err
+	}
+
+	return board, nil
 }
 
 // Delete deletes board by Board Request.
