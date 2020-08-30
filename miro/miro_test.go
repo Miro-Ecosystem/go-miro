@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	baseURLPath   = "/miro-test"
+	baseURLPath   = "/v1"
 	testAccessKey = "miro-test"
 )
 
@@ -18,7 +18,7 @@ func setup() (*Client, *http.ServeMux, string, func()) {
 	apiHandler.Handle(baseURLPath+"/", http.StripPrefix(baseURLPath, mux))
 	server := httptest.NewServer(apiHandler)
 	client := NewClient(testAccessKey)
-	url, _ := url.Parse(server.URL + baseURLPath + "/")
+	url, _ := url.Parse(server.URL + baseURLPath)
 	client.BaseURL = url
 	return client, mux, server.URL, server.Close
 }

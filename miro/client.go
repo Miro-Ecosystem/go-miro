@@ -75,7 +75,7 @@ func NewClient(accessKey string) *Client {
 
 // NewRequest creates an API request.
 func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
-	u, err := c.BaseURL.Parse(urlStr)
+	u, err := c.BaseURL.Parse(fmt.Sprintf("v1/%s", urlStr))
 	if err != nil {
 		return nil, err
 	}
