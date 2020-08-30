@@ -11,10 +11,10 @@ import (
 
 func main() {
 	c := miro.NewClient(os.Getenv("MIRO_ACCESS_KEY"))
-	board, err := c.Boards.Get(context.Background(), "o9J_km_OSX8=")
+	board, err := c.Boards.Get(context.Background(), os.Args[1])
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(board)
+	fmt.Println(board.Name)
 }
