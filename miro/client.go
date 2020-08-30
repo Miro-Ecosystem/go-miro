@@ -13,6 +13,13 @@ import (
 	"time"
 )
 
+var (
+	defaultRateLimit = &RateLimit{
+		Limit:     10000,
+		Remaining: 10000,
+	}
+)
+
 const (
 	rateLimitResetHeader     = "X-RateLimit-Reset"
 	rateLimitRemainingHeader = "X-RateLimit-Remaining"
@@ -60,6 +67,7 @@ func NewClient(accessKey string) *Client {
 
 	c.common.client = c
 	c.client = http.DefaultClient
+	c.RateLimit = defaultRateLimit
 
 	c.AuditLogs = (*AuditLogsService)(&c.common)
 	c.AuthzInfo = (*AuthzInfoService)(&c.common)
@@ -142,7 +150,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request) (*http.Response, err
 			return nil, err
 		}
 		c.RateLimit.Limit = limit
-		defer c.mu.Unlock()
+		c.mu.Unlock()
 	}
 
 	if r := resp.Header.Get(rateLimitRemainingHeader); r != "" {
@@ -152,7 +160,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request) (*http.Response, err
 			return nil, err
 		}
 		c.RateLimit.Remaining = remaining
-		defer c.mu.Unlock()
+		c.mu.Unlock()
 	}
 
 	if r := resp.Header.Get(rateLimitResetHeader); r != "" {
@@ -162,7 +170,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request) (*http.Response, err
 			return nil, err
 		}
 		c.RateLimit.Reset = time.Unix(int64(r), 0)
-		defer c.mu.Unlock()
+		c.mu.Unlock()
 	}
 
 	return resp, nil

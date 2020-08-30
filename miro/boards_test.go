@@ -84,6 +84,7 @@ func TestBoardsService_Get_Error(t *testing.T) {
 	for n, tc := range tcs {
 		t.Run(n, func(t *testing.T) {
 			mux.HandleFunc(fmt.Sprintf("/%s/%s", boardsPath, tc.id), func(w http.ResponseWriter, r *http.Request) {
+				addHeader(w)
 				http.Error(w, fmt.Sprintf(getErrorJSON(http.StatusNotFound)), http.StatusNotFound)
 			})
 

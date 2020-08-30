@@ -1,5 +1,5 @@
-github.com/Miro-Ecosystem/go-miro v0.0.8 h1:SmV4wO92f49cLzYn8JKbBDuft6/d3JOi3MqWsynHxfg=
-github.com/Miro-Ecosystem/go-miro v0.0.8/go.mod h1:dv/664pZSrK3cV5TZhHLSdO+Gg2o6BFMHnllS3sDR8c=
+github.com/Miro-Ecosystem/go-miro v0.0.9 h1:qCi7je4Qc+7Txymosvi5Hw0pea0PpoNnpw0JedB/lEU=
+github.com/Miro-Ecosystem/go-miro v0.0.9/go.mod h1:dv/664pZSrK3cV5TZhHLSdO+Gg2o6BFMHnllS3sDR8c=
 github.com/fatih/camelcase v1.0.0/go.mod h1:yN2Sb0lFhZJUdVvtELVWefmrXpuZESvPmqwoZc+/fpc=
 github.com/fatih/gomodifytags v1.6.0/go.mod h1:I1Y8xh3aVI37vceIxNEr549I/TnDN1wuVPZM7NUR7kA=
 github.com/fatih/structtag v1.0.0/go.mod h1:IKitwq45uXL/yqi5mYghiD3w9H6eTOvI9vnk8tXMphA=
