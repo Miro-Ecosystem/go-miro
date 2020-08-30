@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -19,8 +20,9 @@ const (
 )
 
 type Client struct {
-	common service
-	client *http.Client
+	accessKey string
+	common    service
+	client    *http.Client
 
 	mu sync.RWMutex
 
@@ -45,10 +47,11 @@ type RateLimit struct {
 	Reset     time.Time
 }
 
-func NewClient() *Client {
+func NewClient(accessKey string) *Client {
 	baseURL, _ := url.Parse(baseURL)
 	c := &Client{
-		BaseURL: baseURL,
+		BaseURL:   baseURL,
+		accessKey: accessKey,
 	}
 
 	if c.UserAgent != "" {
@@ -92,6 +95,8 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.accessKey))
 
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
