@@ -22,6 +22,7 @@ func getBoardJSON(id string) string {
 	"name": "%s",
 	"viewLink": "%s",
 	"description": "%s",
+	"picture": null,
 	"createdAt": "1995-06-15T10:00:00Z",
 	"modifiedAt": "1995-06-15T10:00:00Z"
 }`, id, testBoardName, testBoardViewLink, testBoardDesc)

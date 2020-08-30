@@ -264,20 +264,24 @@ func (b *Board) UnmarshalJSON(j []byte) error {
 		}
 
 		if strings.ToLower(k) == "picture" {
-			pic := &MiniPicture{}
-			p := v.(map[string]interface{})
+			if v == nil {
+				b.Picture = nil
+			} else {
+				pic := &MiniPicture{}
+				p := v.(map[string]interface{})
 
-			for k, v := range p {
-				if strings.ToLower(k) == "id" {
-					pic.ID = v.(string)
+				for k, v := range p {
+					if strings.ToLower(k) == "id" {
+						pic.ID = v.(string)
+					}
+
+					if strings.ToLower(k) == "imageurl" {
+						pic.ImageURL = v.(string)
+					}
 				}
 
-				if strings.ToLower(k) == "imageurl" {
-					pic.ImageURL = v.(string)
-				}
+				b.Picture = pic
 			}
-
-			b.Picture = pic
 		}
 
 		if strings.ToLower(k) == "createdBy" {
