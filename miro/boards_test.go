@@ -16,6 +16,22 @@ const (
 	testBoardDesc     = ""
 )
 
+func getErrorJSON(status int) string {
+	return fmt.Sprintf(`{
+	"status": %d,
+	"message": "error",
+	"type": "error"
+}`, status)
+}
+
+func getError(status int) *RespError {
+	return &RespError{
+		Status:  status,
+		Message: "error",
+		Type:    "error",
+	}
+}
+
 func getBoardJSON(id string) string {
 	return fmt.Sprintf(`{
 	"id": "%s",
@@ -63,6 +79,35 @@ func TestBoardsService_Get(t *testing.T) {
 			}
 
 			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("Diff: %s(-got +want)", diff)
+			}
+		})
+	}
+}
+
+func TestBoardsService_Get_Error(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	tcs := map[string]struct {
+		id   string
+		want string
+	}{
+		"ok": {"1", "status code not expected, got:404, message:error"},
+	}
+
+	for n, tc := range tcs {
+		t.Run(n, func(t *testing.T) {
+			mux.HandleFunc(fmt.Sprintf("/%s/%s", boardsPath, tc.id), func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, fmt.Sprintf(getErrorJSON(http.StatusNotFound)), http.StatusNotFound)
+			})
+
+			_, err := client.Boards.Get(context.Background(), tc.id)
+			if err == nil {
+				t.Fatalf("Should failed")
+			}
+
+			if diff := cmp.Diff(err.Error(), tc.want); diff != "" {
 				t.Fatalf("Diff: %s(-got +want)", diff)
 			}
 		})

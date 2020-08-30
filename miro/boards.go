@@ -81,7 +81,7 @@ func (s *BoardsService) Get(ctx context.Context, id string) (*Board, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		var respErr *RespError
+		respErr := &RespError{}
 		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
 			return nil, err
 		}
@@ -122,7 +122,7 @@ func (s *BoardsService) Create(ctx context.Context, b *CreateBoardRequest) (*Boa
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated {
-		var respErr *RespError
+		respErr := &RespError{}
 		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
 			return nil, err
 		}
@@ -160,7 +160,7 @@ func (s *BoardsService) Update(ctx context.Context, b *UpdateBoardRequest) (*Boa
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		var respErr *RespError
+		respErr := &RespError{}
 		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
 			return nil, err
 		}
@@ -186,7 +186,7 @@ func (s *BoardsService) Delete(ctx context.Context, id string) error {
 
 	resp, err := s.client.Do(ctx, req)
 	if err != nil {
-		var respErr *RespError
+		respErr := &RespError{}
 		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
 			return err
 		}
@@ -195,7 +195,7 @@ func (s *BoardsService) Delete(ctx context.Context, id string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusNoContent {
-		var respErr *RespError
+		respErr := &RespError{}
 		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
 			return err
 		}
