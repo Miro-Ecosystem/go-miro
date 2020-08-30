@@ -1,8 +1,10 @@
-github.com/Miro-Ecosystem/go-miro v0.0.3 h1:ipjMBNZoWan5ILTv4M3tDkGU6OsKfNMN1tIDtfncIT0=
-github.com/Miro-Ecosystem/go-miro v0.0.3/go.mod h1:dv/664pZSrK3cV5TZhHLSdO+Gg2o6BFMHnllS3sDR8c=
+github.com/Miro-Ecosystem/go-miro v0.0.4 h1:hPC6HUsW9Zd1OcBSMdcJqOllZCYzxdlNiSCKcVyKvfA=
+github.com/Miro-Ecosystem/go-miro v0.0.4/go.mod h1:dv/664pZSrK3cV5TZhHLSdO+Gg2o6BFMHnllS3sDR8c=
 github.com/fatih/camelcase v1.0.0/go.mod h1:yN2Sb0lFhZJUdVvtELVWefmrXpuZESvPmqwoZc+/fpc=
 github.com/fatih/gomodifytags v1.6.0/go.mod h1:I1Y8xh3aVI37vceIxNEr549I/TnDN1wuVPZM7NUR7kA=
 github.com/fatih/structtag v1.0.0/go.mod h1:IKitwq45uXL/yqi5mYghiD3w9H6eTOvI9vnk8tXMphA=
+github.com/google/go-cmp v0.5.2 h1:X2ev0eStA3AbceY54o37/0PQ/UWqKEiiO2dKL5OPaFM=
 github.com/google/go-cmp v0.5.2/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 golang.org/x/tools v0.0.0-20180824175216-6c1c5e93cdc1/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
+golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 h1:E7g+9GITq07hpfrRu66IVDexMakfv52eLZ2CXBWiKr4=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
