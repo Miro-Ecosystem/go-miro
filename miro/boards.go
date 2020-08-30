@@ -91,6 +91,86 @@ func (s *BoardsService) Get(ctx context.Context, id string) (*Board, error) {
 	return board, nil
 }
 
+// CreateBoardRequest represents create board request payload.
+//
+//go:generate gomodifytags -file $GOFILE -struct CreateBoardRequest -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct CreateBoardRequest -add-tags json -w -transform camelcase
+type CreateBoardRequest struct {
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	SharingPolicy *SharingPolicy `json:"sharingPolicy"`
+}
+
+// Create creates board by Board Request.
+//
+// API doc: https://developers.miro.com/reference#create-board
+func (s *BoardsService) Create(ctx context.Context, b *CreateBoardRequest) error {
+	req, err := s.client.NewPostRequest(boardsPath, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+// UpdateBoardRequest represents update board request payload.
+//
+//go:generate gomodifytags -file $GOFILE -struct UpdateBoardRequest -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct UpdateBoardRequest -add-tags json -w -transform camelcase
+type UpdateBoardRequest struct {
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	SharingPolicy *SharingPolicy `json:"sharingPolicy"`
+}
+
+func (s *BoardsService) Update(ctx context.Context, b *UpdateBoardRequest) error {
+	req, err := s.client.NewPatchRequest(boardsPath, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+// Delete deletes board by Board Request.
+//
+// API doc: No document yet
+func (s *BoardsService) Delete(ctx context.Context, id string) error {
+	req, err := s.client.NewDeleteRequest(fmt.Sprintf("%s/%s", boardsPath, id))
+	if err != nil {
+		return err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	return nil
+}
+
 func (b *Board) UnmarshalJSON(j []byte) error {
 	var rawStrings map[string]interface{}
 
