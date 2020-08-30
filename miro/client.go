@@ -167,3 +167,19 @@ func (c *Client) Do(ctx context.Context, req *http.Request) (*http.Response, err
 
 	return resp, nil
 }
+
+// RespError represents error response from Miro
+//
+//go:generate gomodifytags -file $GOFILE -struct RespError -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct RespError -add-tags json -w -transform camelcase
+type RespError struct {
+	Status  int      `json:"status"`
+	Code    string   `json:"code"`
+	Message string   `json:"message"`
+	Context *Context `json:"context"`
+	Type    string   `json:"type"`
+}
+
+func (e *RespError) Error() string {
+	return e.Message
+}

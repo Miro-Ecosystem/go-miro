@@ -78,6 +78,7 @@ func (s *BoardsService) Get(ctx context.Context, id string) (*Board, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
@@ -111,8 +112,13 @@ func (s *BoardsService) Create(ctx context.Context, b *CreateBoardRequest) (*Boa
 	}
 
 	resp, err := s.client.Do(ctx, req)
+	defer resp.Body.Close()
 	if err != nil {
-		return nil, err
+		var respErr *RespError
+		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
+			return nil, err
+		}
+		return nil, respErr
 	}
 
 	if resp.StatusCode != http.StatusCreated {
@@ -144,8 +150,13 @@ func (s *BoardsService) Update(ctx context.Context, b *UpdateBoardRequest) (*Boa
 	}
 
 	resp, err := s.client.Do(ctx, req)
+	defer resp.Body.Close()
 	if err != nil {
-		return nil, err
+		var respErr *RespError
+		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
+			return nil, err
+		}
+		return nil, respErr
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -170,8 +181,13 @@ func (s *BoardsService) Delete(ctx context.Context, id string) error {
 	}
 
 	resp, err := s.client.Do(ctx, req)
+	defer resp.Body.Close()
 	if err != nil {
-		return err
+		var respErr *RespError
+		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
+			return err
+		}
+		return respErr
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
