@@ -16,22 +16,6 @@ const (
 	testBoardDesc     = ""
 )
 
-func getErrorJSON(status int) string {
-	return fmt.Sprintf(`{
-	"status": %d,
-	"message": "error",
-	"type": "error"
-}`, status)
-}
-
-func getError(status int) *RespError {
-	return &RespError{
-		Status:  status,
-		Message: "error",
-		Type:    "error",
-	}
-}
-
 func getBoardJSON(id string) string {
 	return fmt.Sprintf(`{
 	"id": "%s",

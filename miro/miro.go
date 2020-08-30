@@ -1,7 +1,7 @@
 package miro
 
 const (
-	baseURL          = "https://api.miro.com/v1"
+	baseURL          = "https://api.miro.com"
 	defaultUserAgent = "go-miro"
 )
 
