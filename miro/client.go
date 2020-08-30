@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"path"
 	"strconv"
 	"sync"
 	"time"
@@ -76,7 +75,10 @@ func NewClient(accessKey string) *Client {
 
 // NewRequest creates an API request.
 func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
-	u := path.Join(c.BaseURL.Path, urlStr)
+	u, err := c.BaseURL.Parse(urlStr)
+	if err != nil {
+		return nil, err
+	}
 
 	var buf io.ReadWriter
 	if body != nil {
@@ -89,7 +91,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 		}
 	}
 
-	req, err := http.NewRequest(method, u, buf)
+	req, err := http.NewRequest(method, u.String(), buf)
 	if err != nil {
 		return nil, err
 	}
