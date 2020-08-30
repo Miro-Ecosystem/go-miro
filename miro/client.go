@@ -129,12 +129,12 @@ func (c *Client) NewPostRequest(urlStr string, body interface{}) (*http.Request,
 
 // NewPatchRequest creates an API Patch request.
 func (c *Client) NewPatchRequest(urlStr string, body interface{}) (*http.Request, error) {
-	return c.NewRequest("Patch", urlStr, body)
+	return c.NewRequest("PATCH", urlStr, body)
 }
 
 // NewDeleteRequest creates an API Delete request.
 func (c *Client) NewDeleteRequest(urlStr string) (*http.Request, error) {
-	return c.NewRequest("Delete", urlStr, nil)
+	return c.NewRequest("DELETE", urlStr, nil)
 }
 
 func (c *Client) Do(ctx context.Context, req *http.Request) (*http.Response, error) {
