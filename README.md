@@ -27,6 +27,12 @@ Using the client:
 client := miro.NewClient("access token")
 ```
 
+API's are very simple and easy to understand.
+
+```go
+client.Board.Get("10")
+```
+
 ## Supported APIs
 
 See the [Supported APIs](docs/API.md) for supported APIs.
