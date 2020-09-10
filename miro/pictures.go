@@ -39,7 +39,7 @@ type MiniPicture struct {
 //
 // API doc: https://developers.miro.com/reference#get-user
 func (s *PicturesService) Get(ctx context.Context, id string) (*Picture, error) {
-	req, err := s.client.NewGetRequest(fmt.Sprintf("%s/%s", picturesPath, id))
+	req, err := s.client.NewGetRequest(fmt.Sprintf("type/%s/%s", id, picturesPath))
 	if err != nil {
 		return nil, err
 	}
@@ -59,6 +59,26 @@ func (s *PicturesService) Get(ctx context.Context, id string) (*Picture, error) 
 	}
 
 	return picture, nil
+}
+
+// Delete deletes picture by Picture ID.
+//
+// API doc: https://developers.miro.com/reference#delete-picture
+func (s *PicturesService) Delete(ctx context.Context, id string) error {
+	req, err := s.client.NewDeleteRequest(fmt.Sprintf("type/%s/%s", id, picturesPath))
+	if err != nil {
+		return err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+	return nil
 }
 
 func (p *Picture) UnmarshalJSON(j []byte) error {
