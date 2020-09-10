@@ -69,6 +69,32 @@ func (s *UsersService) Get(ctx context.Context, id string) (*User, error) {
 	return user, nil
 }
 
+// GetCurrentUser gets current user
+//
+// API doc: https://developers.miro.com/reference#get-current-user
+func (s *UsersService) GetCurrentUser(ctx context.Context) (*User, error) {
+	req, err := s.client.NewGetRequest(fmt.Sprintf("%s/me", usersPath))
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	user := &User{}
+	if err := json.NewDecoder(resp.Body).Decode(user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (u *User) UnmarshalJSON(j []byte) error {
 	var rawStrings map[string]interface{}
 
