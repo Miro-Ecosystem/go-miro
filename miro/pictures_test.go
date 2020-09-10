@@ -1,6 +1,7 @@
 package miro
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -45,6 +46,38 @@ func TestPicturesService_Get(t *testing.T) {
 			})
 
 			got, err := client.Picture.Get(context.Background(), tc.id)
+			if err != nil {
+				t.Fatalf("Failed: %v", err)
+			}
+
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("Diff: %s(-got +want)", diff)
+			}
+		})
+	}
+}
+
+func TestPicturesService_Upsert(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	tcs := map[string]struct {
+		id    string
+		Image *bytes.Buffer
+		want  *Picture
+	}{
+		"ok": {"1", bytes.NewBuffer(make([]byte, 0, 10)), getPicture("1")},
+	}
+
+	for n, tc := range tcs {
+		t.Run(n, func(t *testing.T) {
+			mux.HandleFunc(fmt.Sprintf("/type/%s/%s", tc.id, picturesPath), func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, fmt.Sprintf(getPictureJSON(tc.id)))
+			})
+
+			got, err := client.Picture.Upsert(context.Background(), tc.id, &UpsertPictureRequest{
+				tc.Image,
+			})
 			if err != nil {
 				t.Fatalf("Failed: %v", err)
 			}

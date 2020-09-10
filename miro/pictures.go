@@ -1,6 +1,7 @@
 package miro
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -43,6 +44,43 @@ func (s *PicturesService) Get(ctx context.Context, id string) (*Picture, error) 
 	if err != nil {
 		return nil, err
 	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	picture := &Picture{}
+	if err := json.NewDecoder(resp.Body).Decode(picture); err != nil {
+		return nil, err
+	}
+
+	return picture, nil
+}
+
+// UpsertPictureRequest represents update board request payload.
+//
+//go:generate gomodifytags -file $GOFILE -struct UpsertPictureRequest -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct UpsertPictureRequest -add-tags json -w -transform camelcase
+type UpsertPictureRequest struct {
+	Image *bytes.Buffer
+}
+
+// Upsert upserts a picture by Picture ID.
+//
+// API doc: https://developers.miro.com/reference#create-or-update-picture
+func (s *PicturesService) Upsert(ctx context.Context, id string, request *UpsertPictureRequest) (*Picture, error) {
+	req, err := s.client.NewPostRequest(fmt.Sprintf("type/%s/%s", id, picturesPath), request)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Del("Content-Type")
+	req.Header.Set("content-type", "multipart/form-data")
 
 	resp, err := s.client.Do(ctx, req)
 	if err != nil {
