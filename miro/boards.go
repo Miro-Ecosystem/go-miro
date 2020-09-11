@@ -65,6 +65,17 @@ type MiniBoard struct {
 	CurrentUserConnection *TeamUserConnection `json:"currentUserConnection"`
 }
 
+// ListBoardsResponse represents list response from Miro
+//
+//go:generate gomodifytags -file $GOFILE -struct ListBoardsResponse -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct ListBoardsResponse -add-tags json -w -transform camelcase
+type ListBoardsResponse struct {
+	Limit  int      `json:"limit"`
+	Offset int      `json:"offset"`
+	Size   int      `json:"size"`
+	Data   []*Board `json:"data"`
+}
+
 // Get gets board by Board ID.
 //
 // API doc: https://developers.miro.com/reference#get-board
@@ -137,6 +148,45 @@ func (s *BoardsService) Create(ctx context.Context, b *CreateBoardRequest) (*Boa
 	return board, nil
 }
 
+// ShareBoardRequest represents update board request payload.
+//
+//go:generate gomodifytags -file $GOFILE -struct ShareBoardRequest -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct ShareBoardRequest -add-tags json -w -transform camelcase
+type ShareBoardRequest struct {
+	Emails []string `json:"emails"`
+}
+
+// Share shares board by Board ID.
+//
+// API doc: https://developers.miro.com/reference#share-board
+func (s *BoardsService) Share(ctx context.Context, id string, request *ShareBoardRequest) (*ListBoardsResponse, error) {
+	req, err := s.client.NewPostRequest(fmt.Sprintf("%s/%s/share", boardsPath, id), request)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respErr := &RespError{}
+		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
+			return nil, err
+		}
+		return nil, fmt.Errorf("status code not expected, got:%d, message:%s", resp.StatusCode, respErr.Message)
+	}
+
+	boardList := &ListBoardsResponse{}
+	if err := json.NewDecoder(resp.Body).Decode(boardList); err != nil {
+		return nil, err
+	}
+
+	return boardList, nil
+}
+
 // UpdateBoardRequest represents update board request payload.
 //
 //go:generate gomodifytags -file $GOFILE -struct UpdateBoardRequest -clear-tags -w
@@ -203,6 +253,41 @@ func (s *BoardsService) Delete(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+// GetCurrentUserBoards gets current user's boards by Teams ID.
+//
+// API doc: https://developers.miro.com/reference#get-team-boards
+func (s *BoardsService) GetCurrentUserBoards(ctx context.Context, teamID string) (*ListBoardsResponse, error) {
+	req, err := s.client.NewGetRequest(fmt.Sprintf("%s/%s/boards", teamsPath, teamID))
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		respErr := &RespError{}
+		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
+			return nil, err
+		}
+		return nil, respErr
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		respErr := &RespError{}
+		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
+			return nil, err
+		}
+		return nil, fmt.Errorf("status code not expected, got:%d, message:%s", resp.StatusCode, respErr.Message)
+	}
+
+	boardList := &ListBoardsResponse{}
+	if err := json.NewDecoder(resp.Body).Decode(boardList); err != nil {
+		return nil, err
+	}
+
+	return boardList, nil
 }
 
 func (b *Board) UnmarshalJSON(j []byte) error {
