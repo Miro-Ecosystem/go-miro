@@ -74,32 +74,6 @@ func (s *TeamsService) GetTeam(ctx context.Context, id string) (*Team, error) {
 	return t, nil
 }
 
-// GetUserConnections gets team user connections by Team ID.
-//
-// API doc: https://developers.miro.com/reference#get-team-user-connections
-func (s *TeamsService) GetTeamUserConnections(ctx context.Context, id string) (*Team, error) {
-	req, err := s.client.NewGetRequest(fmt.Sprintf("%s/%s/%s", teamsPath, id, userConnectionsPath))
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := s.client.Do(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	if http.StatusBadRequest <= resp.StatusCode && resp.StatusCode <= http.StatusInsufficientStorage {
-		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
-	}
-
-	t := &Team{}
-	if err := json.NewDecoder(resp.Body).Decode(t); err != nil {
-		return nil, err
-	}
-
-	return t, nil
-}
-
 // GetCurrentUserConnection gets team current user connection by Team ID.
 //
 // API doc: https://developers.miro.com/reference#get-team-current-user-connection
