@@ -90,3 +90,60 @@ func TestTeamUserConnectionService_Get(t *testing.T) {
 		})
 	}
 }
+
+func TestTeamUserConnectionService_Update(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	tcs := map[string]struct {
+		id   string
+		want *TeamUserConnection
+		req  *UpdateTeamUserConnectionRequest
+	}{
+		"ok": {"1", getTeamUserConnection("1"), &UpdateTeamUserConnectionRequest{
+			"admin",
+		}},
+	}
+
+	for n, tc := range tcs {
+		t.Run(n, func(t *testing.T) {
+			mux.HandleFunc(fmt.Sprintf("/%s/1", teamUserConnectionsPath), func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, fmt.Sprintf(getTeamUserConnectionJSON(tc.id)))
+			})
+
+			got, err := client.TeamUserConnection.Update(context.Background(), tc.id, tc.req)
+			if err != nil {
+				t.Fatalf("Failed: %v", err)
+			}
+
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("Diff: %s(-got +want)", diff)
+			}
+		})
+	}
+}
+
+func TestTeamUserConnectionService_Delete(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	tcs := map[string]struct {
+		id   string
+		want *TeamUserConnection
+	}{
+		"ok": {"1", getTeamUserConnection("1")},
+	}
+
+	for n, tc := range tcs {
+		t.Run(n, func(t *testing.T) {
+			mux.HandleFunc(fmt.Sprintf("/%s/1", teamUserConnectionsPath), func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, "{}")
+			})
+
+			err := client.TeamUserConnection.Delete(context.Background(), tc.id)
+			if err != nil {
+				t.Fatalf("Failed: %v", err)
+			}
+		})
+	}
+}

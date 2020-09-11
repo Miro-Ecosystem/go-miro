@@ -69,6 +69,61 @@ func (s *TeamUserConnectionService) Get(ctx context.Context, id string) (*TeamUs
 	return conn, nil
 }
 
+// UpdateTeamUserConnectionRequest represents request to update team user connection
+//
+//go:generate gomodifytags -file $GOFILE -struct UpdateTeamUserConnectionRequest -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct UpdateTeamUserConnectionRequest -add-tags json -w -transform camelcase
+type UpdateTeamUserConnectionRequest struct {
+	Role string `json:"role"`
+}
+
+// Update updates team user connection by TeamUserConnection ID.
+//
+// API doc: https://developers.miro.com/reference#update-team-user-connection
+func (s *TeamUserConnectionService) Update(ctx context.Context, id string, request *UpdateTeamUserConnectionRequest) (*TeamUserConnection, error) {
+	req, err := s.client.NewPatchRequest(fmt.Sprintf("%s/%s", teamUserConnectionsPath, id), request)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	conn := &TeamUserConnection{}
+	if err := json.NewDecoder(resp.Body).Decode(conn); err != nil {
+		return nil, err
+	}
+
+	return conn, nil
+}
+
+// Delete deletes team user connection by TeamUserConnection ID.
+//
+// API doc: https://developers.miro.com/reference#delete-team-user-connection
+func (s *TeamUserConnectionService) Delete(ctx context.Context, id string) error {
+	req, err := s.client.NewDeleteRequest(fmt.Sprintf("%s/%s", teamUserConnectionsPath, id))
+	if err != nil {
+		return err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	return nil
+}
+
 func (t *TeamUserConnection) UnmarshalJSON(j []byte) error {
 	var rawStrings map[string]interface{}
 
