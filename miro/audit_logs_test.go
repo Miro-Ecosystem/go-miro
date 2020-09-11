@@ -27,7 +27,7 @@ func getAuditLogJSON() string {
 			"type": "event",
 			"event": "board_opened",
 			"details": {
-				"role": "owner"
+				"role": "OWNER"
 			},
 			"context": {
 				"organization": {
@@ -53,6 +53,9 @@ func getAuditLog() *AuditLog {
 		Data: []Data{{
 			ID:    "log",
 			Event: "board_opened",
+			Details: &Detail{
+				Role: "OWNER",
+			},
 		}},
 	}
 }

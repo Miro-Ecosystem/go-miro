@@ -153,6 +153,18 @@ func unmarshalData(d []interface{}) ([]Data, error) {
 				}
 				datum.CreatedAt = at
 			}
+
+			if strings.ToLower(k) == "details" {
+				details := &Detail{}
+				fmt.Println("hoho")
+				js, err := json.Marshal(v)
+				if err != nil {
+					return nil, err
+				}
+				r := strings.NewReader(string(js))
+				json.NewDecoder(r).Decode(details)
+				datum.Details = details
+			}
 		}
 
 		data[i] = datum
