@@ -1,7 +1,7 @@
 package miro
 
 const (
-	widgetsPath = "boards"
+	widgetsPath = "widgets"
 )
 
 // WidgetsService handles communication to Miro Widgets API.

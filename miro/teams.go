@@ -48,10 +48,10 @@ func (t *MiniTeam) GetType() string {
 	return "team"
 }
 
-// GetTeam gets team by Team ID.
+// Get gets team by Team ID.
 //
 // API doc: https://developers.miro.com/reference#get-team
-func (s *TeamsService) GetTeam(ctx context.Context, id string) (*Team, error) {
+func (s *TeamsService) Get(ctx context.Context, id string) (*Team, error) {
 	req, err := s.client.NewGetRequest(fmt.Sprintf("%s/%s", teamsPath, id))
 	if err != nil {
 		return nil, err
@@ -67,6 +67,77 @@ func (s *TeamsService) GetTeam(ctx context.Context, id string) (*Team, error) {
 	}
 
 	t := &Team{}
+	if err := json.NewDecoder(resp.Body).Decode(t); err != nil {
+		return nil, err
+	}
+
+	return t, nil
+}
+
+// UpdateTeamRequest represents request to update team user connection
+//
+//go:generate gomodifytags -file $GOFILE -struct UpdateTeamRequest -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct UpdateTeamRequest -add-tags json -w -transform camelcase
+type UpdateTeamRequest struct {
+	Name string `json:"name"`
+}
+
+// Update updates team by Team ID.
+//
+// API doc: https://developers.miro.com/reference#update-team
+func (s *TeamsService) Update(ctx context.Context, id string, request *UpdateTeamRequest) (*Team, error) {
+	req, err := s.client.NewPatchRequest(fmt.Sprintf("%s/%s", teamsPath, id), request)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if http.StatusBadRequest <= resp.StatusCode && resp.StatusCode <= http.StatusInsufficientStorage {
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	t := &Team{}
+	if err := json.NewDecoder(resp.Body).Decode(t); err != nil {
+		return nil, err
+	}
+
+	return t, nil
+}
+
+// ListTeamMembersResponse represents list response from Miro
+//
+//go:generate gomodifytags -file $GOFILE -struct ListTeamMembersResponse -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct ListTeamMembersResponse -add-tags json -w -transform camelcase
+type ListTeamMembersResponse struct {
+	Limit  int     `json:"limit"`
+	Offset int     `json:"offset"`
+	Size   int     `json:"size"`
+	Data   []*Team `json:"data"`
+}
+
+// ListTeamMembers gets all team members
+//
+// API doc: https://developers.miro.com/reference#get-team-user-connections
+func (s *TeamsService) ListTeamMembers(ctx context.Context, id string) (*ListTeamMembersResponse, error) {
+	req, err := s.client.NewGetRequest(fmt.Sprintf("%s/%s", teamsPath, id))
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if http.StatusBadRequest <= resp.StatusCode && resp.StatusCode <= http.StatusInsufficientStorage {
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	t := &ListTeamMembersResponse{}
 	if err := json.NewDecoder(resp.Body).Decode(t); err != nil {
 		return nil, err
 	}

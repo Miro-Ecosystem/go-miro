@@ -59,6 +59,66 @@ func (s *BoardUserConnectionService) Get(ctx context.Context, id string) (*Board
 	return conn, nil
 }
 
+// UpdateBoardUserConnectionRequest represents request to update board user connection
+//
+//go:generate gomodifytags -file $GOFILE -struct UpdateBoardUserConnectionRequest -clear-tags -w
+//go:generate gomodifytags --file $GOFILE --struct UpdateBoardUserConnectionRequest -add-tags json -w -transform camelcase
+type UpdateBoardUserConnectionRequest struct {
+	Role string `json:"role"`
+}
+
+// Update updates board user connection by BoardUserConnection ID.
+//
+// API doc: https://developers.miro.com/reference#update-board-user-connection
+func (s *BoardUserConnectionService) Updates(ctx context.Context, id string, request *UpdateBoardUserConnectionRequest) (*BoardUserConnection, error) {
+	req, err := s.client.NewPatchRequest(fmt.Sprintf("%s/%s", boardUserConnectionsPath, id), request)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	conn := &BoardUserConnection{}
+	if err := json.NewDecoder(resp.Body).Decode(conn); err != nil {
+		return nil, err
+	}
+
+	return conn, nil
+}
+
+// Delete deletes board user connection by BoardUserConnection ID.
+//
+// API doc: https://developers.miro.com/reference#delete-board-user-connection
+func (s *BoardUserConnectionService) Delete(ctx context.Context, id string) error {
+	req, err := s.client.NewDeleteRequest(fmt.Sprintf("%s/%s", boardUserConnectionsPath, id))
+	if err != nil {
+		return err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	conn := &BoardUserConnection{}
+	if err := json.NewDecoder(resp.Body).Decode(conn); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *BoardUserConnection) UnmarshalJSON(j []byte) error {
 	var rawStrings map[string]interface{}
 

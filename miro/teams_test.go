@@ -35,7 +35,7 @@ func getTeam(id string) *Team {
 	}
 }
 
-func TestTeamsService_GetTeam(t *testing.T) {
+func TestTeamsService_Get(t *testing.T) {
 	client, mux, _, teardown := setup()
 	defer teardown()
 
@@ -52,7 +52,39 @@ func TestTeamsService_GetTeam(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(getTeamJSON(tc.id)))
 			})
 
-			got, err := client.Teams.GetTeam(context.Background(), tc.id)
+			got, err := client.Teams.Get(context.Background(), tc.id)
+			if err != nil {
+				t.Fatalf("Failed: %v", err)
+			}
+
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("Diff: %s(-got +want)", diff)
+			}
+		})
+	}
+}
+
+func TestTeamsService_Update(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	tcs := map[string]struct {
+		id   string
+		want *Team
+		req  *UpdateTeamRequest
+	}{
+		"ok": {"1", getTeam("1"), &UpdateTeamRequest{
+			"miro",
+		}},
+	}
+
+	for n, tc := range tcs {
+		t.Run(n, func(t *testing.T) {
+			mux.HandleFunc(fmt.Sprintf("/%s/%s", teamsPath, tc.id), func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, fmt.Sprintf(getTeamJSON(tc.id)))
+			})
+
+			got, err := client.Teams.Update(context.Background(), tc.id, tc.req)
 			if err != nil {
 				t.Fatalf("Failed: %v", err)
 			}
