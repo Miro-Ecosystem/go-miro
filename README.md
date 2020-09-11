@@ -5,6 +5,8 @@
 
 Go written [Miro](https://miro.com/app/dashboard/) API client.
 
+*Note that Widget is not supported yet*
+
 ## Installation
 
 Include this is your code as below:
