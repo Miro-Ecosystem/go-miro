@@ -2,6 +2,7 @@
 
 ![tests](https://github.com/Miro-Ecosystem/go-miro/workflows/tests/badge.svg)
 [![codecov](https://codecov.io/gh/Miro-Ecosystem/go-miro/branch/master/graph/badge.svg)](https://codecov.io/gh/Miro-Ecosystem/go-miro)
+[![Documentation](https://godoc.org/github.com/yangwenmai/how-to-add-badge-in-github-readme?status.svg)](https://pkg.go.dev/mod/github.com/Miro-Ecosystem/go-miro)
 
 Go written [Miro](https://miro.com/app/dashboard/) API client.
 
