@@ -103,3 +103,31 @@ func TestUsersService_GetCurrentUser(t *testing.T) {
 		})
 	}
 }
+
+func TestUsersService_UpdateCurrentUser(t *testing.T) {
+	client, mux, _, teardown := setup()
+	defer teardown()
+
+	tcs := map[string]struct {
+		want *User
+	}{
+		"ok": {getUser("1")},
+	}
+
+	for n, tc := range tcs {
+		t.Run(n, func(t *testing.T) {
+			mux.HandleFunc(fmt.Sprintf("/%s/me", usersPath), func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, fmt.Sprintf(getUserJSON("1")))
+			})
+
+			got, err := client.Users.GetCurrentUser(context.Background())
+			if err != nil {
+				t.Fatalf("Failed: %v", err)
+			}
+
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Fatalf("Diff: %s(-got +want)", diff)
+			}
+		})
+	}
+}

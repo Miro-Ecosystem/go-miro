@@ -95,6 +95,37 @@ func (s *UsersService) GetCurrentUser(ctx context.Context) (*User, error) {
 	return user, nil
 }
 
+// UpdateCurrentUserRequest represents the request to update current user
+type UpdateCurrentUserRequest struct {
+	Name string `json:"name"`
+}
+
+// UpdateCurrentUser updates current user
+//
+// API doc: https://developers.miro.com/reference#update-current-user
+func (s *UsersService) UpdateCurrentUser(ctx context.Context, request *UpdateCurrentUserRequest) (*User, error) {
+	req, err := s.client.NewPostRequest(fmt.Sprintf("%s/me", usersPath), request)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.client.Do(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code not expected, got:%d", resp.StatusCode)
+	}
+
+	user := &User{}
+	if err := json.NewDecoder(resp.Body).Decode(user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (u *User) UnmarshalJSON(j []byte) error {
 	var rawStrings map[string]interface{}
 
