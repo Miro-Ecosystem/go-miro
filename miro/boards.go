@@ -197,8 +197,11 @@ type UpdateBoardRequest struct {
 	SharingPolicy *SharingPolicy `json:"sharingPolicy"`
 }
 
-func (s *BoardsService) Update(ctx context.Context, b *UpdateBoardRequest) (*Board, error) {
-	req, err := s.client.NewPatchRequest(boardsPath, b)
+// Update board.
+//
+// API doc: https://developers.miro.com/reference#update-board
+func (s *BoardsService) Update(ctx context.Context, id string, b *UpdateBoardRequest) (*Board, error) {
+	req, err := s.client.NewPatchRequest(fmt.Sprintf("%s/%s", boardsPath, id), b)
 	if err != nil {
 		return nil, err
 	}
