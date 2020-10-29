@@ -277,7 +277,7 @@ func (s *BoardsService) GetCurrentUserBoards(ctx context.Context, teamID string)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusNoContent {
+	if resp.StatusCode != http.StatusOK {
 		respErr := &RespError{}
 		if err := json.NewDecoder(resp.Body).Decode(respErr); err != nil {
 			return nil, err
