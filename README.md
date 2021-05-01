@@ -36,10 +36,6 @@ API's are very simple and easy to understand.
 client.Board.Get("10")
 ```
 
-## Supported APIs
-
-See the [Supported APIs](docs/API.md) for supported APIs.
-
 ## Copyright and License
 
 Please see the LICENSE file for the included license information.
