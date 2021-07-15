@@ -9,8 +9,16 @@ import (
 	"strings"
 )
 
+type pictureType string
+
 const (
-	picturesPath = "pictures"
+	boards pictureType = "boards"
+	teams = "teams"
+	users = "users"
+)
+
+const (
+	picturesPath = "picture"
 )
 
 // PicturesService handles communication to Miro Pictures API.
@@ -24,6 +32,7 @@ type PicturesService service
 //go:generate gomodifytags -file $GOFILE -struct Picture -clear-tags -w
 //go:generate gomodifytags --file $GOFILE --struct Picture -add-tags json -w -transform camelcase
 type Picture struct {
+	Type     string `json:"type"`
 	ID       string `json:"id"`
 	ImageURL string `json:"imageURL"`
 }
@@ -32,15 +41,28 @@ type Picture struct {
 //go:generate gomodifytags -file $GOFILE -struct MiniPicture -clear-tags -w
 //go:generate gomodifytags --file $GOFILE --struct MiniPicture -add-tags json -w -transform camelcase
 type MiniPicture struct {
+	Type     string `json:"type"`
 	ID       string `json:"id"`
 	ImageURL string `json:"imageURL"`
+}
+
+func validatePictureType(pictureType pictureType) error {
+	switch pictureType {
+	case boards, teams, users:
+		return nil
+	}
+	return fmt.Errorf("\"%s\" is not a recognised pictureType", pictureType)
 }
 
 // Get gets picture by Picture ID.
 //
 // API doc: https://developers.miro.com/reference#get-user
-func (s *PicturesService) Get(ctx context.Context, id string) (*Picture, error) {
-	req, err := s.client.NewGetRequest(fmt.Sprintf("type/%s/%s", id, picturesPath))
+func (s *PicturesService) Get(ctx context.Context, pictureType pictureType, id string) (*Picture, error) {
+	err := validatePictureType(pictureType)
+	if err != nil {
+		return nil, err
+	}
+	req, err := s.client.NewGetRequest(fmt.Sprintf("%s/%s/%s", pictureType, id, picturesPath))
 	if err != nil {
 		return nil, err
 	}
@@ -73,8 +95,12 @@ type UpsertPictureRequest struct {
 // Upsert upserts a picture by Picture ID.
 //
 // API doc: https://developers.miro.com/reference#create-or-update-picture
-func (s *PicturesService) Upsert(ctx context.Context, id string, request *UpsertPictureRequest) (*Picture, error) {
-	req, err := s.client.NewPostRequest(fmt.Sprintf("type/%s/%s", id, picturesPath), request)
+func (s *PicturesService) Upsert(ctx context.Context, pictureType pictureType, id string, request *UpsertPictureRequest) (*Picture, error) {
+	err := validatePictureType(pictureType)
+	if err != nil {
+		return nil, err
+	}
+	req, err := s.client.NewPostRequest(fmt.Sprintf("%s/%s/%s", pictureType, id, picturesPath), request)
 	if err != nil {
 		return nil, err
 	}
@@ -102,8 +128,12 @@ func (s *PicturesService) Upsert(ctx context.Context, id string, request *Upsert
 // Delete deletes picture by Picture ID.
 //
 // API doc: https://developers.miro.com/reference#delete-picture
-func (s *PicturesService) Delete(ctx context.Context, id string) error {
-	req, err := s.client.NewDeleteRequest(fmt.Sprintf("type/%s/%s", id, picturesPath))
+func (s *PicturesService) Delete(ctx context.Context, pictureType pictureType, id string) error {
+	err := validatePictureType(pictureType)
+	if err != nil {
+		return err
+	}
+	req, err := s.client.NewDeleteRequest(fmt.Sprintf("%s/%s/%s", pictureType, id, picturesPath))
 	if err != nil {
 		return err
 	}
